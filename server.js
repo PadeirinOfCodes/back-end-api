@@ -8,8 +8,7 @@ const { Pool } = pkg;
 const app = express();
 const port = 3000;
 
-app.use(express.json());
-app.use(express.static("public"));
+app.use(express.json()); // Middleware para interpretar requisições com corpo em JSON
 
 let pool = null;
 
@@ -33,15 +32,28 @@ try {
   console.error("Erro na conexão com o banco de dados:", dbStatus);
 }
 
-
-
-app.get("/api-status", async (req, res) => {
-  console.log("Rota GET /api-status solicitada");
+app.get("/", async (req, res) => {
+  console.log("Rota GET / solicitada");
   res.json({
-    message: "API para a atividade (CRUD Usuários)",
-    author: "Ryan Gabriel Gonçalves Silva (com ajustes de Gemini)",
+    message: "API para a atividade aqui",
+    author: "Ryan Gabriel Gonçalves Silva",
     statusBD: dbStatus,
   });
+});
+
+app.get("/questoes", async (req, res) => {
+  console.log("Rota GET /questoes solicitada");
+  try {
+    const resultado = await db.query("SELECT * FROM questoes");
+    const dados = resultado.rows;
+    res.json(dados);
+  } catch (e) {
+    console.error("Erro ao buscar questões:", e);
+    res.status(500).json({
+      erro: "Erro interno do servidor",
+      mensagem: "Não foi possível buscar as questões",
+    });
+  }
 });
 
 app.get("/questoes/:id", async (req, res) => {
@@ -147,7 +159,7 @@ app.put("/questoes/:id", async (req, res) => {
     data.nivel = data.nivel || questao[0].nivel;
 
     // Atualiza a questão
-    consulta = "UPDATE questoes SET enunciado = $1, disciplina = $2, tema = $3, nivel = $4 WHERE id = $5";
+    consulta ="UPDATE questoes SET enunciado = $1, disciplina = $2, tema = $3, nivel = $4 WHERE id = $5";
     // Executa a consulta SQL com os valores fornecidos
     resultado = await db.query(consulta, [
       data.enunciado,
