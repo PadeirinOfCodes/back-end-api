@@ -33,9 +33,7 @@ try {
   console.error("Erro na conexão com o banco de dados:", dbStatus);
 }
 
-app.get("/", async (req, res) => {
-  res.redirect("/index.html");
-});
+
 
 app.get("/api-status", async (req, res) => {
   console.log("Rota GET /api-status solicitada");
